@@ -2,6 +2,7 @@ package com.djaphar.montyhall;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -57,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
             RadioButton rb = (RadioButton)view;
             switch (rb.getId()) {
                 case R.id.firstDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 0);
+                    mGameViewModel.showDialogByOptions(this, prizeId, 0, activity);
                     break;
                 case R.id.secondDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 1);
+                    mGameViewModel.showDialogByOptions(this, prizeId, 1, activity);
                     break;
                 case R.id.thirdDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 2);
+                    mGameViewModel.showDialogByOptions(this, prizeId, 2, activity);
                     break;
             }
         };
@@ -71,9 +72,20 @@ public class MainActivity extends AppCompatActivity {
         firstDoor.setOnClickListener(rbListener);
         secondDoor.setOnClickListener(rbListener);
         thirdDoor.setOnClickListener(rbListener);
+
+        Button clearBtn = findViewById(R.id.clearBtn);
+        clearBtn.setOnClickListener(view -> {
+            mGameViewModel.clearStats();
+        });
     }
 
     public float getPercent(float a, float b) {
-        return a / b * 100;
+        return round(a / b * 100);
+    }
+
+    public float round(float f) {
+        f = f * 100;
+        int i = Math.round(f);
+        return (float)i / 100;
     }
 }

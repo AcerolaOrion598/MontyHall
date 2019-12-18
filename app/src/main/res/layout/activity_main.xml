@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginTop="28dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,17 +19,17 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="208dp"
-            android:layout_height="wrap_content"
+            android:layout_width="163dp"
+            android:layout_height="match_parent"
             android:text="@string/change_stat_title"
             android:textAlignment="center"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/textView4"
-            android:layout_width="203sp"
-            android:layout_height="wrap_content"
-            android:text="@string/not_change_stat_title"
+            android:id="@+id/changedStat"
+            android:layout_width="248dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
             android:textAlignment="center"
             android:textSize="18sp" />
 
@@ -38,7 +38,7 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -46,17 +46,17 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <TextView
-            android:id="@+id/changedStat"
-            android:layout_width="208dp"
-            android:layout_height="wrap_content"
-            android:text="TextView"
+            android:id="@+id/textView4"
+            android:layout_width="163dp"
+            android:layout_height="match_parent"
+            android:text="@string/not_change_stat_title"
             android:textAlignment="center"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/notChangedStat"
-            android:layout_width="203dp"
-            android:layout_height="wrap_content"
+            android:layout_width="248dp"
+            android:layout_height="match_parent"
             android:text="TextView"
             android:textAlignment="center"
             android:textSize="18sp" />
@@ -96,5 +96,15 @@
             android:textSize="24sp" />
 
     </RadioGroup>
+
+    <Button
+        android:id="@+id/clearBtn"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/clearStatButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

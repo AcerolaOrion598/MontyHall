@@ -5,4 +5,5 @@
     <string name="first_door">Первая дверь</string>
     <string name="second_door">Вторая дверь</string>
     <string name="third_door">Третья дверь</string>
+    <string name="clearStatButton">Сбросить статистику</string>
 </resources>

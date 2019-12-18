@@ -5,11 +5,9 @@ import android.content.Context;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Game.class}, version = 1, exportSchema = false)
 public abstract class GameRoom extends RoomDatabase {
@@ -26,27 +24,10 @@ public abstract class GameRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             GameRoom.class, "game_database")
-//                            .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
-
-    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-            super.onOpen(db);
-
-            databaseWriteExecutor.execute(() -> {
-                GameDao dao = INSTANCE.gameDao();
-
-                Game game = new Game(false, false);
-                dao.insert(game);
-//                game = new Game(true, true);
-//                dao.insert(game);
-            });
-        }
-    };
 }

@@ -11,6 +11,9 @@ public interface GameDao {
     @Insert
     void insert(Game game);
 
+    @Query("DELETE FROM game_table")
+    void clearTable();
+
     @Query("SELECT COUNT(*) FROM game_table WHERE isChanged = :changed")
     LiveData<Integer> getGames(Boolean changed);
 
