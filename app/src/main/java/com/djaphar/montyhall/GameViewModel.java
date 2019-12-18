@@ -1,6 +1,9 @@
 package com.djaphar.montyhall;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,6 +13,7 @@ public class GameViewModel extends AndroidViewModel {
 
     private GameDao mGameDao;
     private LiveData<Integer> notChangedGames, notChangedWins, changedGames, changedWins;
+    private Door[] doors = new Door[3];
 
     public GameViewModel(@NonNull Application application) {
         super(application);
@@ -42,5 +46,67 @@ public class GameViewModel extends AndroidViewModel {
         GameRoom.databaseWriteExecutor.execute(() -> {
             mGameDao.insert(game);
         });
+    }
+
+    void createDoors(int prizeId) {
+        for (int i = 0; i < 3; i++) {
+            if (i == prizeId) {
+                doors[i] = new Door(true);
+            } else {
+                doors[i] = new Door(false);
+            }
+        }
+    }
+
+    void showDialogByOptions(Context context, int prizeId, int myDoor) {
+
+        if (prizeId != myDoor) {
+            for (int i = 0; true; i++) {
+                if (i != prizeId && i != myDoor) {
+                    dialog(context, i, prizeId, myDoor);
+                    break;
+                }
+            }
+        } else {
+            int randomDoor = randomizeMe(prizeId);
+            dialog(context, randomDoor, prizeId, myDoor);
+        }
+
+    }
+
+    private int randomizeMe(int prizeId) {
+        int rand = (int) (Math.random() * 3);
+        if (rand == prizeId) {
+            rand = randomizeMe(prizeId);
+        }
+        return rand;
+    }
+
+    private void dialog(Context context, int emptyDoor, int prizeId, int myDoor) {
+        AlertDialog.Builder ad = new AlertDialog.Builder(context);
+        ad.setTitle("Шаг 2")
+                .setMessage("Дверь " + (emptyDoor + 1) +" пустая. Хотите поменять свой выбор?")
+                .setPositiveButton("Да", (dialogInterface, i) -> {
+                    if (myDoor == prizeId) {
+                        endGame(true, false, "проиграли!", context);
+                    } else {
+                        endGame(true, true, "выиграли!", context);
+                    }
+                })
+                .setNegativeButton("Нет", (dialogInterface, i) -> {
+                    if (myDoor == prizeId) {
+                        endGame(false, true, "выиграли!", context);
+                    } else {
+                        endGame(false, false, "проиграли!", context);
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private void endGame(Boolean isChanged, Boolean win, String status, Context context) {
+        Game game = new Game(isChanged, win);
+        insert(game);
+        Toast.makeText(context, "Вы " + status, Toast.LENGTH_LONG).show();
     }
 }
