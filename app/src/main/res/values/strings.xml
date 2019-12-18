@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MontyHall</string>
+    <string name="change_stat_title">Менять</string>
+    <string name="not_change_stat_title">Не менять</string>
+    <string name="first_door">Первая дверь</string>
+    <string name="second_door">Вторая дверь</string>
+    <string name="third_door">Третья дверь</string>
+</resources>
