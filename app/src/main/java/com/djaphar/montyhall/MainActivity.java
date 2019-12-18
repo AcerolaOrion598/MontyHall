@@ -74,9 +74,7 @@ public class MainActivity extends AppCompatActivity {
         thirdDoor.setOnClickListener(rbListener);
 
         Button clearBtn = findViewById(R.id.clearBtn);
-        clearBtn.setOnClickListener(view -> {
-            mGameViewModel.clearStats();
-        });
+        clearBtn.setOnClickListener(view -> mGameViewModel.clearStats());
     }
 
     public float getPercent(float a, float b) {

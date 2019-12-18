@@ -43,15 +43,11 @@ public class GameViewModel extends AndroidViewModel {
     }
 
     private void insert(Game game) {
-        GameRoom.databaseWriteExecutor.execute(() -> {
-            mGameDao.insert(game);
-        });
+        GameRoom.databaseWriteExecutor.execute(() -> mGameDao.insert(game));
     }
 
     void clearStats() {
-        GameRoom.databaseWriteExecutor.execute(() -> {
-            mGameDao.clearTable();
-        });
+        GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable());
     }
 
     void createDoors(int prizeId) {
@@ -90,20 +86,20 @@ public class GameViewModel extends AndroidViewModel {
 
     private void dialog(Context context, int emptyDoor, int prizeId, int myDoor, MainActivity activity) {
         AlertDialog.Builder ad = new AlertDialog.Builder(context);
-        ad.setTitle("Шаг 2")
-                .setMessage("Дверь " + (emptyDoor + 1) +" пустая. Хотите поменять свой выбор?")
-                .setPositiveButton("Да", (dialogInterface, i) -> {
+        ad.setTitle(R.string.alert_title)
+                .setMessage(R.string.alert_message_first + " " + (emptyDoor + 1) + " " + R.string.alert_message_second)
+                .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
                     if (myDoor == prizeId) {
-                        endGame(true, false, "проиграли!", context, activity);
+                        endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose), context, activity);
                     } else {
-                        endGame(true, true, "выиграли!", context, activity);
+                        endGame(true, true, context.getResources().getString(R.string.endgame_toast_win), context, activity);
                     }
                 })
-                .setNegativeButton("Нет", (dialogInterface, i) -> {
+                .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
                     if (myDoor == prizeId) {
-                        endGame(false, true, "выиграли!", context, activity);
+                        endGame(false, true, context.getResources().getString(R.string.endgame_toast_win), context, activity);
                     } else {
-                        endGame(false, false, "проиграли!", context, activity);
+                        endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose), context, activity);
                     }
                 })
                 .setCancelable(false)
@@ -113,7 +109,7 @@ public class GameViewModel extends AndroidViewModel {
     private void endGame(Boolean isChanged, Boolean win, String status, Context context, MainActivity activity) {
         Game game = new Game(isChanged, win);
         insert(game);
-        Toast.makeText(context, "Вы " + status, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, R.string.endgame_toast_begin + " " + status, Toast.LENGTH_LONG).show();
         activity.recreate();
     }
 }
