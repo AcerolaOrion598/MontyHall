@@ -14,4 +14,6 @@
     <string name="endgame_toast_begin">Вы</string>
     <string name="endgame_toast_win">выиграли!</string>
     <string name="endgame_toast_lose">проиграли!</string>
+    <string name="alert_clear_title">Подтвердите сброс статистики</string>
+    <string name="alert_clear_message">Сбросить статистику?</string>
 </resources>

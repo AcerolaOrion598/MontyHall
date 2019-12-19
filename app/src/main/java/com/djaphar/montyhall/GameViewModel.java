@@ -49,7 +49,7 @@ public class GameViewModel extends AndroidViewModel {
         GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable());
     }
 
-    AlertDialog.Builder showDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
+    AlertDialog.Builder createDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
         AlertDialog.Builder ad;
 
         if (prizeId != myDoor) {
@@ -77,27 +77,27 @@ public class GameViewModel extends AndroidViewModel {
     private AlertDialog.Builder dialog(Context context, int emptyDoor, int prizeId, int myDoor, MainActivity activity) {
         AlertDialog.Builder ad = new AlertDialog.Builder(context);
         ad.setTitle(R.string.alert_title)
-                .setMessage(context.getResources().getString(R.string.alert_message_first) + " " + (emptyDoor + 1)
-                        + " " + context.getResources().getString(R.string.alert_message_second))
-                .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
-                    if (myDoor == prizeId) {
-                        endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose),
-                                context, activity);
-                    } else {
-                        endGame(true, true, context.getResources().getString(R.string.endgame_toast_win),
-                                context, activity);
-                    }
-                })
-                .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
-                    if (myDoor == prizeId) {
-                        endGame(false, true, context.getResources().getString(R.string.endgame_toast_win),
-                                context, activity);
-                    } else {
-                        endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose),
-                                context, activity);
-                    }
-                })
-                .setCancelable(false);
+            .setMessage(context.getResources().getString(R.string.alert_message_first) + " " + (emptyDoor + 1)
+                    + " " + context.getResources().getString(R.string.alert_message_second))
+            .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
+                if (myDoor == prizeId) {
+                    endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose),
+                            context, activity);
+                } else {
+                    endGame(true, true, context.getResources().getString(R.string.endgame_toast_win),
+                            context, activity);
+                }
+            })
+            .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
+                if (myDoor == prizeId) {
+                    endGame(false, true, context.getResources().getString(R.string.endgame_toast_win),
+                            context, activity);
+                } else {
+                    endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose),
+                            context, activity);
+                }
+            })
+            .setCancelable(false);
         return ad;
     }
 

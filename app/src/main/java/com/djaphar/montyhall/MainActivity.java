@@ -57,7 +57,16 @@ public class MainActivity extends AppCompatActivity {
         resetRadioListener(prizeId);
         Button clearBtn = findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(view -> {
-            mGameViewModel.clearStats();
+            AlertDialog.Builder ad = new AlertDialog.Builder(this);
+            ad.setTitle(R.string.alert_clear_title)
+                .setMessage(this.getResources().getString(R.string.alert_clear_message))
+                .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
+                    mGameViewModel.clearStats();
+                })
+                .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
+                    dialogInterface.cancel();
+                })
+                .show();
         });
     }
 
@@ -68,13 +77,13 @@ public class MainActivity extends AppCompatActivity {
             RadioButton rb = (RadioButton)view;
             switch (rb.getId()) {
                 case R.id.firstDoor:
-                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 0, activity);
+                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 0, activity);
                     break;
                 case R.id.secondDoor:
-                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 1, activity);
+                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 1, activity);
                     break;
                 case R.id.thirdDoor:
-                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 2, activity);
+                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 2, activity);
                     break;
             }
 
