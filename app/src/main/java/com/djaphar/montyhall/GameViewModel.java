@@ -13,7 +13,6 @@ public class GameViewModel extends AndroidViewModel {
 
     private GameDao mGameDao;
     private LiveData<Integer> notChangedGames, notChangedWins, changedGames, changedWins;
-    private Door[] doors = new Door[3];
 
     public GameViewModel(@NonNull Application application) {
         super(application);
@@ -48,16 +47,6 @@ public class GameViewModel extends AndroidViewModel {
 
     void clearStats() {
         GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable());
-    }
-
-    void createDoors(int prizeId) {
-        for (int i = 0; i < 3; i++) {
-            if (i == prizeId) {
-                doors[i] = new Door(true);
-            } else {
-                doors[i] = new Door(false);
-            }
-        }
     }
 
     AlertDialog.Builder showDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
@@ -119,7 +108,6 @@ public class GameViewModel extends AndroidViewModel {
                 + status, Toast.LENGTH_LONG).show();
 
         int prizeId = (int) (Math.random() * 3);
-        createDoors(prizeId);
         activity.resetRadioListener(prizeId);
     }
 }

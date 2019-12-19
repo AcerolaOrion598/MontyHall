@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         thirdDoor = findViewById(R.id.thirdDoor);
 
         int prizeId = (int) (Math.random() * 3);
-        mGameViewModel.createDoors(prizeId);
         resetRadioListener(prizeId);
         Button clearBtn = findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(view -> {
