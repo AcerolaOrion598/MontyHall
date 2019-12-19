@@ -60,20 +60,21 @@ public class GameViewModel extends AndroidViewModel {
         }
     }
 
-    void showDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
+    AlertDialog.Builder showDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
+        AlertDialog.Builder ad;
 
         if (prizeId != myDoor) {
             for (int i = 0; true; i++) {
                 if (i != prizeId && i != myDoor) {
-                    dialog(context, i, prizeId, myDoor, activity);
+                    ad = dialog(context, i, prizeId, myDoor, activity);
                     break;
                 }
             }
         } else {
             int randomDoor = randomizeMe(prizeId);
-            dialog(context, randomDoor, prizeId, myDoor, activity);
+            ad = dialog(context, randomDoor, prizeId, myDoor, activity);
         }
-
+        return ad;
     }
 
     private int randomizeMe(int prizeId) {
@@ -84,32 +85,41 @@ public class GameViewModel extends AndroidViewModel {
         return rand;
     }
 
-    private void dialog(Context context, int emptyDoor, int prizeId, int myDoor, MainActivity activity) {
+    private AlertDialog.Builder dialog(Context context, int emptyDoor, int prizeId, int myDoor, MainActivity activity) {
         AlertDialog.Builder ad = new AlertDialog.Builder(context);
         ad.setTitle(R.string.alert_title)
-                .setMessage(R.string.alert_message_first + " " + (emptyDoor + 1) + " " + R.string.alert_message_second)
+                .setMessage(context.getResources().getString(R.string.alert_message_first) + " " + (emptyDoor + 1)
+                        + " " + context.getResources().getString(R.string.alert_message_second))
                 .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
                     if (myDoor == prizeId) {
-                        endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose), context, activity);
+                        endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose),
+                                context, activity);
                     } else {
-                        endGame(true, true, context.getResources().getString(R.string.endgame_toast_win), context, activity);
+                        endGame(true, true, context.getResources().getString(R.string.endgame_toast_win),
+                                context, activity);
                     }
                 })
                 .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
                     if (myDoor == prizeId) {
-                        endGame(false, true, context.getResources().getString(R.string.endgame_toast_win), context, activity);
+                        endGame(false, true, context.getResources().getString(R.string.endgame_toast_win),
+                                context, activity);
                     } else {
-                        endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose), context, activity);
+                        endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose),
+                                context, activity);
                     }
                 })
-                .setCancelable(false)
-                .show();
+                .setCancelable(false);
+        return ad;
     }
 
     private void endGame(Boolean isChanged, Boolean win, String status, Context context, MainActivity activity) {
         Game game = new Game(isChanged, win);
         insert(game);
-        Toast.makeText(context, R.string.endgame_toast_begin + " " + status, Toast.LENGTH_LONG).show();
-        activity.recreate();
+        Toast.makeText(context, context.getResources().getString(R.string.endgame_toast_begin) + " "
+                + status, Toast.LENGTH_LONG).show();
+
+        int prizeId = (int) (Math.random() * 3);
+        createDoors(prizeId);
+        activity.resetRadioListener(prizeId);
     }
 }

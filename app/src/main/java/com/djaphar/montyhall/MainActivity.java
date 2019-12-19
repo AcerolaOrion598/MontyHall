@@ -1,5 +1,6 @@
 package com.djaphar.montyhall;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GameViewModel mGameViewModel;
     private MainActivity activity = this;
+    private RadioButton firstDoor, secondDoor, thirdDoor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,34 +49,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        firstDoor = findViewById(R.id.firstDoor);
+        secondDoor= findViewById(R.id.secondDoor);
+        thirdDoor = findViewById(R.id.thirdDoor);
+
         int prizeId = (int) (Math.random() * 3);
         mGameViewModel.createDoors(prizeId);
+        resetRadioListener(prizeId);
+        Button clearBtn = findViewById(R.id.clearBtn);
+        clearBtn.setOnClickListener(view -> {
+            mGameViewModel.clearStats();
+        });
+    }
 
-        RadioButton firstDoor = findViewById(R.id.firstDoor);
-        RadioButton secondDoor= findViewById(R.id.secondDoor);
-        RadioButton thirdDoor = findViewById(R.id.thirdDoor);
-
+    public void resetRadioListener(int prizeId) {
         View.OnClickListener rbListener = view -> {
+            AlertDialog.Builder ad = null;
+
             RadioButton rb = (RadioButton)view;
             switch (rb.getId()) {
                 case R.id.firstDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 0, activity);
+                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 0, activity);
                     break;
                 case R.id.secondDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 1, activity);
+                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 1, activity);
                     break;
                 case R.id.thirdDoor:
-                    mGameViewModel.showDialogByOptions(this, prizeId, 2, activity);
+                    ad = mGameViewModel.showDialogByOptions(this, prizeId, 2, activity);
                     break;
+            }
+
+            if (ad != null) {
+                ad.show();
             }
         };
 
         firstDoor.setOnClickListener(rbListener);
         secondDoor.setOnClickListener(rbListener);
         thirdDoor.setOnClickListener(rbListener);
-
-        Button clearBtn = findViewById(R.id.clearBtn);
-        clearBtn.setOnClickListener(view -> mGameViewModel.clearStats());
     }
 
     public float getPercent(float a, float b) {

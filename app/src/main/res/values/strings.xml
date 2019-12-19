@@ -8,7 +8,7 @@
     <string name="clearStatButton">Сбросить статистику</string>
     <string name="alert_title">Шаг 2</string>
     <string name="alert_message_first">Дверь</string>
-    <string name="alert_message_second">Шаг 2</string>
+    <string name="alert_message_second">пустая. Не хотите поменять свой выбор?</string>
     <string name="alert_pos_button">Да</string>
     <string name="alert_neg_button">Нет</string>
     <string name="endgame_toast_begin">Вы</string>
