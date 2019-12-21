@@ -1,9 +1,6 @@
 package com.djaphar.montyhall;
 
-import android.app.AlertDialog;
 import android.app.Application;
-import android.content.Context;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -41,7 +38,7 @@ public class GameViewModel extends AndroidViewModel {
         return changedWins;
     }
 
-    private void insert(Game game) {
+    void insert(Game game) {
         GameRoom.databaseWriteExecutor.execute(() -> mGameDao.insert(game));
     }
 
@@ -49,21 +46,45 @@ public class GameViewModel extends AndroidViewModel {
         GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable());
     }
 
-    AlertDialog.Builder createDialogByOptions(Context context, int prizeId, int myDoor, MainActivity activity) {
-        AlertDialog.Builder ad;
+    void autoPlay(int games) {
+
+        for (int i = 0; i < games; i++) {
+            int prizeId = (int) (Math.random() * 3);
+            int myDoor = (int) (Math.random() * 3);
+
+            if (i % 2 == 0) {
+                //Блок с изменением выбора
+                if (myDoor == prizeId) {
+                    //insert в бд для автоплея с поражением
+                } else {
+                    //insert в бд для автоплея с победой
+                }
+            } else {
+                //Блок без изменения выбора
+                if (myDoor == prizeId) {
+                    //insert в бд для автоплея с победой
+                } else {
+                    //insert в бд для автоплея с поражением
+                }
+            }
+        }
+    }
+
+    int figureOutEmptyDoor(int prizeId, int myDoor) {
+        int emptyDoor;
 
         if (prizeId != myDoor) {
             for (int i = 0; true; i++) {
                 if (i != prizeId && i != myDoor) {
-                    ad = dialog(context, i, prizeId, myDoor, activity);
+                    emptyDoor = i;
                     break;
                 }
             }
         } else {
-            int randomDoor = randomizeMe(prizeId);
-            ad = dialog(context, randomDoor, prizeId, myDoor, activity);
+            emptyDoor = randomizeMe(prizeId);
         }
-        return ad;
+
+        return emptyDoor;
     }
 
     private int randomizeMe(int prizeId) {
@@ -71,43 +92,7 @@ public class GameViewModel extends AndroidViewModel {
         if (rand == prizeId) {
             rand = randomizeMe(prizeId);
         }
+
         return rand;
-    }
-
-    private AlertDialog.Builder dialog(Context context, int emptyDoor, int prizeId, int myDoor, MainActivity activity) {
-        AlertDialog.Builder ad = new AlertDialog.Builder(context);
-        ad.setTitle(R.string.alert_title)
-            .setMessage(context.getResources().getString(R.string.alert_message_first) + " " + (emptyDoor + 1)
-                    + " " + context.getResources().getString(R.string.alert_message_second))
-            .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
-                if (myDoor == prizeId) {
-                    endGame(true, false, context.getResources().getString(R.string.endgame_toast_lose),
-                            context, activity);
-                } else {
-                    endGame(true, true, context.getResources().getString(R.string.endgame_toast_win),
-                            context, activity);
-                }
-            })
-            .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
-                if (myDoor == prizeId) {
-                    endGame(false, true, context.getResources().getString(R.string.endgame_toast_win),
-                            context, activity);
-                } else {
-                    endGame(false, false, context.getResources().getString(R.string.endgame_toast_lose),
-                            context, activity);
-                }
-            })
-            .setCancelable(false);
-        return ad;
-    }
-
-    private void endGame(Boolean isChanged, Boolean win, String status, Context context, MainActivity activity) {
-        Game game = new Game(isChanged, win);
-        insert(game);
-        Toast.makeText(context, context.getResources().getString(R.string.endgame_toast_begin) + " "
-                + status, Toast.LENGTH_LONG).show();
-
-        int prizeId = (int) (Math.random() * 3);
-        activity.resetRadioListener(prizeId);
     }
 }

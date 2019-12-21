@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 public class MainActivity extends AppCompatActivity {
 
     private GameViewModel mGameViewModel;
-    private MainActivity activity = this;
     private RadioButton firstDoor, secondDoor, thirdDoor;
 
     @Override
@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         mGameViewModel = ViewModelProviders.of(this).get(GameViewModel.class);
 
 
-        mGameViewModel.getChangedWins().observe(activity, val -> {
+        mGameViewModel.getChangedWins().observe(this, val -> {
             if (val != null) {
-                mGameViewModel.getChangedGames().observe(activity, secVal -> {
+                mGameViewModel.getChangedGames().observe(this, secVal -> {
                     if (secVal != null) {
                         String statVal = val.toString() + "/" + secVal.toString() + " (" + getPercent(val, secVal) + "%)";
                         changedStat.setText(statVal);
@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mGameViewModel.getNotChangedWins().observe(activity, val -> {
+        mGameViewModel.getNotChangedWins().observe(this, val -> {
             if (val != null) {
-                mGameViewModel.getNotChangedGames().observe(activity, secVal -> {
+                mGameViewModel.getNotChangedGames().observe(this, secVal -> {
                     if (secVal != null) {
                         String statVal = val.toString() + "/" + secVal.toString() + " (" + getPercent(val, secVal) + "%)";
                         notChangedStat.setText(statVal);
@@ -73,18 +73,23 @@ public class MainActivity extends AppCompatActivity {
     public void resetRadioListener(int prizeId) {
         View.OnClickListener rbListener = view -> {
             AlertDialog.Builder ad = null;
+            int myDoor = -1;
 
             RadioButton rb = (RadioButton)view;
             switch (rb.getId()) {
                 case R.id.firstDoor:
-                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 0, activity);
+                    myDoor = 0;
                     break;
                 case R.id.secondDoor:
-                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 1, activity);
+                    myDoor = 1;
                     break;
                 case R.id.thirdDoor:
-                    ad = mGameViewModel.createDialogByOptions(this, prizeId, 2, activity);
+                    myDoor = 2;
                     break;
+            }
+
+            if (myDoor != -1) {
+                ad = dialog(mGameViewModel.figureOutEmptyDoor(prizeId, myDoor), prizeId, myDoor);
             }
 
             if (ad != null) {
@@ -96,6 +101,41 @@ public class MainActivity extends AppCompatActivity {
         secondDoor.setOnClickListener(rbListener);
         thirdDoor.setOnClickListener(rbListener);
     }
+
+    private AlertDialog.Builder dialog(int emptyDoor, int prizeId, int myDoor) {
+        AlertDialog.Builder ad = new AlertDialog.Builder(this);
+        ad.setTitle(R.string.alert_title)
+            .setMessage(this.getResources().getString(R.string.alert_message_first) + " " + (emptyDoor + 1)
+                    + " " + this.getResources().getString(R.string.alert_message_second))
+            .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
+                if (myDoor == prizeId) {
+                    endGame(true, false, this.getResources().getString(R.string.endgame_toast_lose));
+                } else {
+                    endGame(true, true, this.getResources().getString(R.string.endgame_toast_win));
+                }
+            })
+            .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
+                if (myDoor == prizeId) {
+                    endGame(false, true, this.getResources().getString(R.string.endgame_toast_win));
+                } else {
+                    endGame(false, false, this.getResources().getString(R.string.endgame_toast_lose));
+                }
+            })
+            .setCancelable(false);
+
+        return ad;
+    }
+
+    private void endGame(Boolean isChanged, Boolean win, String status) {
+        Game game = new Game(isChanged, win);
+        mGameViewModel.insert(game);
+        Toast.makeText(this, this.getResources().getString(R.string.endgame_toast_begin) + " "
+                + status, Toast.LENGTH_LONG).show();
+
+        int prizeId = (int) (Math.random() * 3);
+        resetRadioListener(prizeId);
+    }
+
 
     public float getPercent(float a, float b) {
         return round(a / b * 100);
