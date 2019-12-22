@@ -1,6 +1,7 @@
 package com.djaphar.montyhall;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -26,23 +27,22 @@ public class MainActivity extends AppCompatActivity {
 
         mGameViewModel = ViewModelProviders.of(this).get(GameViewModel.class);
 
-
-        mGameViewModel.getChangedWins().observe(this, val -> {
+        mGameViewModel.getChangedWins(false).observe(this, val -> {
             if (val != null) {
-                mGameViewModel.getChangedGames().observe(this, secVal -> {
+                mGameViewModel.getChangedGames(false).observe(this, secVal -> {
                     if (secVal != null) {
-                        String statVal = val.toString() + "/" + secVal.toString() + " (" + getPercent(val, secVal) + "%)";
+                        String statVal = val.toString() + "/" + secVal.toString() + " (" + mGameViewModel.getPercent(val, secVal) + "%)";
                         changedStat.setText(statVal);
                     }
                 });
             }
         });
 
-        mGameViewModel.getNotChangedWins().observe(this, val -> {
+        mGameViewModel.getNotChangedWins(false).observe(this, val -> {
             if (val != null) {
-                mGameViewModel.getNotChangedGames().observe(this, secVal -> {
+                mGameViewModel.getNotChangedGames(false).observe(this, secVal -> {
                     if (secVal != null) {
-                        String statVal = val.toString() + "/" + secVal.toString() + " (" + getPercent(val, secVal) + "%)";
+                        String statVal = val.toString() + "/" + secVal.toString() + " (" + mGameViewModel.getPercent(val, secVal) + "%)";
                         notChangedStat.setText(statVal);
                     }
                 });
@@ -55,19 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
         int prizeId = (int) (Math.random() * 3);
         resetRadioListener(prizeId);
+
         Button clearBtn = findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(view -> {
             AlertDialog.Builder ad = new AlertDialog.Builder(this);
             ad.setTitle(R.string.alert_clear_title)
                 .setMessage(this.getResources().getString(R.string.alert_clear_message))
-                .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> {
-                    mGameViewModel.clearStats();
-                })
-                .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> {
-                    dialogInterface.cancel();
-                })
+                .setPositiveButton(R.string.alert_pos_button, (dialogInterface, i) -> mGameViewModel.clearStats(false))
+                .setNegativeButton(R.string.alert_neg_button, (dialogInterface, i) -> dialogInterface.cancel())
                 .show();
         });
+
+        Button autoPlayBtn = findViewById(R.id.autoplayBtn);
+        autoPlayBtn.setOnClickListener(view -> startActivity(new Intent(this, AutoPlayActivity.class)));
     }
 
     public void resetRadioListener(int prizeId) {
@@ -127,23 +127,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGame(Boolean isChanged, Boolean win, String status) {
-        Game game = new Game(isChanged, win);
-        mGameViewModel.insert(game);
+        mGameViewModel.createGame(isChanged, win, false);
         Toast.makeText(this, this.getResources().getString(R.string.endgame_toast_begin) + " "
                 + status, Toast.LENGTH_LONG).show();
 
         int prizeId = (int) (Math.random() * 3);
         resetRadioListener(prizeId);
-    }
-
-
-    public float getPercent(float a, float b) {
-        return round(a / b * 100);
-    }
-
-    public float round(float f) {
-        f = f * 100;
-        int i = Math.round(f);
-        return (float)i / 100;
     }
 }

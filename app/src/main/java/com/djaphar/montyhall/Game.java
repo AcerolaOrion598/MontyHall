@@ -19,9 +19,14 @@ public class Game {
     @ColumnInfo(name = "win")
     private Boolean win;
 
-    public Game(@NonNull Boolean isChanged, @NonNull Boolean win) {
+    @NonNull
+    @ColumnInfo(name = "auto")
+    private Boolean auto;
+
+    public Game(@NonNull Boolean isChanged, @NonNull Boolean win, @NonNull Boolean auto) {
         this.isChanged = isChanged;
         this.win = win;
+        this.auto = auto;
     }
 
     @NonNull
@@ -36,6 +41,11 @@ public class Game {
 
     public int getId() {
         return id;
+    }
+
+    @NonNull
+    public Boolean getAuto() {
+        return auto;
     }
 
     public void setId(int id) {

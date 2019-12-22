@@ -9,41 +9,62 @@ import androidx.lifecycle.LiveData;
 public class GameViewModel extends AndroidViewModel {
 
     private GameDao mGameDao;
-    private LiveData<Integer> notChangedGames, notChangedWins, changedGames, changedWins;
+    private LiveData<Integer> notChangedGames, notChangedWins, changedGames, changedWins,
+            notChangedGamesAuto, notChangedWinsAuto, changedGamesAuto, changedWinsAuto;
 
     public GameViewModel(@NonNull Application application) {
         super(application);
         GameRoom db = GameRoom.getDatabase(application);
         mGameDao = db.gameDao();
 
-        notChangedGames = mGameDao.getGames(false);
-        notChangedWins = mGameDao.getWins(false, true);
-        changedGames = mGameDao.getGames(true);
-        changedWins = mGameDao.getWins(true, true);
+        notChangedGames = mGameDao.getGames(false, false);
+        notChangedWins = mGameDao.getWins(false, true, false);
+        changedGames = mGameDao.getGames(true, false);
+        changedWins = mGameDao.getWins(true, true, false);
+        notChangedGamesAuto = mGameDao.getGames(false, true);
+        notChangedWinsAuto = mGameDao.getWins(false, true, true);
+        changedGamesAuto = mGameDao.getGames(true, true);
+        changedWinsAuto = mGameDao.getWins(true, true, true);
     }
 
-    LiveData<Integer> getNotChangedGames() {
-        return notChangedGames;
+    LiveData<Integer> getNotChangedGames(Boolean auto) {
+        if (auto) {
+            return notChangedGamesAuto;
+        } else {
+            return notChangedGames;
+        }
     }
 
-    LiveData<Integer> getNotChangedWins() {
-        return notChangedWins;
+    LiveData<Integer> getNotChangedWins(Boolean auto) {
+        if (auto) {
+            return notChangedWinsAuto;
+        } else {
+            return notChangedWins;
+        }
     }
 
-    LiveData<Integer> getChangedGames() {
-        return changedGames;
+    LiveData<Integer> getChangedGames(Boolean auto) {
+        if (auto) {
+            return changedGamesAuto;
+        } else {
+            return changedGames;
+        }
     }
 
-    LiveData<Integer> getChangedWins() {
-        return changedWins;
+    LiveData<Integer> getChangedWins(Boolean auto) {
+        if (auto) {
+            return changedWinsAuto;
+        } else {
+            return changedWins;
+        }
     }
 
-    void insert(Game game) {
+    private void insert(Game game) {
         GameRoom.databaseWriteExecutor.execute(() -> mGameDao.insert(game));
     }
 
-    void clearStats() {
-        GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable());
+    void clearStats(Boolean auto) {
+        GameRoom.databaseWriteExecutor.execute(() -> mGameDao.clearTable(auto));
     }
 
     void autoPlay(int games) {
@@ -55,36 +76,32 @@ public class GameViewModel extends AndroidViewModel {
             if (i % 2 == 0) {
                 //Блок с изменением выбора
                 if (myDoor == prizeId) {
-                    //insert в бд для автоплея с поражением
+                     createGame(true, false, true);
                 } else {
-                    //insert в бд для автоплея с победой
+                    createGame(true, true, true);
                 }
             } else {
                 //Блок без изменения выбора
                 if (myDoor == prizeId) {
-                    //insert в бд для автоплея с победой
+                    createGame(false, true, true);
                 } else {
-                    //insert в бд для автоплея с поражением
+                    createGame(false, false, true);
                 }
             }
         }
     }
 
     int figureOutEmptyDoor(int prizeId, int myDoor) {
-        int emptyDoor;
 
         if (prizeId != myDoor) {
             for (int i = 0; true; i++) {
                 if (i != prizeId && i != myDoor) {
-                    emptyDoor = i;
-                    break;
+                    return i;
                 }
             }
         } else {
-            emptyDoor = randomizeMe(prizeId);
+            return randomizeMe(prizeId);
         }
-
-        return emptyDoor;
     }
 
     private int randomizeMe(int prizeId) {
@@ -94,5 +111,19 @@ public class GameViewModel extends AndroidViewModel {
         }
 
         return rand;
+    }
+
+    float getPercent(float a, float b) {
+        return round(a / b * 100);
+    }
+
+    private float round(float f) {
+        f = f * 100;
+        int i = Math.round(f);
+        return (float) i / 100;
+    }
+
+    void createGame(Boolean isChanged, Boolean win, Boolean auto) {
+        insert(new Game(isChanged, win, auto));
     }
 }

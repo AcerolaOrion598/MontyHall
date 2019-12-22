@@ -16,4 +16,7 @@
     <string name="endgame_toast_lose">проиграли!</string>
     <string name="alert_clear_title">Подтвердите сброс статистики</string>
     <string name="alert_clear_message">Сбросить статистику?</string>
+    <string name="autoplay_activity_btn">Автоплей</string>
+    <string name="auto_play_start">Начать</string>
+    <string name="back_btn">Назад</string>
 </resources>
